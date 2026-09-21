@@ -2,6 +2,8 @@ import logging
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from backend.app.core.config import settings
+from backend.app.services.conversation_service import ConversationService
 from backend.app.services.llm_service import (
     LLMServiceError,
     LLMUnavailableError,
@@ -17,6 +19,7 @@ router = APIRouter(
 )
 
 rag_service = RAGService()
+conversation_service = ConversationService()
 
 
 class ChatRequest(BaseModel):
@@ -26,14 +29,19 @@ class ChatRequest(BaseModel):
         description="Question to ask the RAG system",
     )
     k: int = Field(
-        default=4,
+        default=settings.RERANK_TOP_K,
         ge=1,
         le=10,
         description="Number of documents to retrieve",
     )
+    conversation_id: str | None = Field(
+        default=None,
+        description="Optional ID of an existing conversation",
+    )
 
 
 class ChatResponse(BaseModel):
+    conversation_id: str
     question: str
     answer: str
     sources: list[dict]
@@ -43,7 +51,7 @@ class ChatResponse(BaseModel):
 @router.post("", response_model=ChatResponse)
 def chat(request: ChatRequest):
     """
-    Ask a question using the RAG pipeline.
+    Ask a question using the RAG pipeline with short-term memory and persistence.
     """
     if not request.question.strip():
         raise HTTPException(
@@ -51,13 +59,53 @@ def chat(request: ChatRequest):
             detail="Question cannot be empty or whitespace.",
         )
 
+    # Resolve or create conversation session
+    conv_id = request.conversation_id
+    if not conv_id:
+        title = conversation_service.generate_title_from_question(request.question)
+        conv = conversation_service.create_conversation(title=title)
+        conv_id = conv.id
+    else:
+        existing = conversation_service.get_conversation(conv_id)
+        if not existing:
+            title = conversation_service.generate_title_from_question(request.question)
+            conv = conversation_service.create_conversation(
+                title=title,
+                conversation_id=conv_id,
+            )
+            conv_id = conv.id
+
     try:
-        result = rag_service.ask(
-            question=request.question,
-            k=request.k,
+        try:
+            result = rag_service.ask(
+                question=request.question,
+                k=request.k,
+                conversation_id=conv_id,
+            )
+        except TypeError as type_err:
+            if "conversation_id" in str(type_err):
+                result = rag_service.ask(
+                    question=request.question,
+                    k=request.k,
+                )
+            else:
+                raise
+
+        # Persist messages upon successful generation
+        conversation_service.add_message(
+            conversation_id=conv_id,
+            role="user",
+            content=request.question.strip(),
+        )
+        conversation_service.add_message(
+            conversation_id=conv_id,
+            role="assistant",
+            content=result["answer"],
+            sources=result["sources"],
         )
 
         return ChatResponse(
+            conversation_id=conv_id,
             question=result["question"],
             answer=result["answer"],
             sources=result["sources"],

@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     RAW_DATA_DIR: Path = DATA_DIR / "raw"
     PROCESSED_DATA_DIR: Path = DATA_DIR / "processed"
     METADATA_DIR: Path = DATA_DIR / "metadata"
+    DATABASE_PATH: Path = DATA_DIR / "conversations.db"
+
+    # Conversation History & Memory Configuration
+    MEMORY_WINDOW_MESSAGES: int = 6
 
     # Gemini Embeddings Configuration
     GOOGLE_API_KEY: str | None = None
@@ -30,6 +34,12 @@ class Settings(BaseSettings):
     GEMINI_LLM_MODEL: str = "gemini-3.6-flash"
     LLM_MAX_RETRIES: int = 3
     LLM_RETRY_DELAY: float = 2.0
+
+    # Cohere Reranker Configuration
+    COHERE_API_KEY: str | None = None
+    COHERE_RERANK_MODEL: str = "rerank-v4.0-fast"
+    RERANK_INITIAL_K: int = 15
+    RERANK_TOP_K: int = 5
 
     model_config = SettingsConfigDict(
         env_file=".env",

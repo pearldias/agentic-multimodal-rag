@@ -1,170 +1,263 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, useRef, useEffect, useCallback } from "react";
+import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
+import WelcomeScreen from "./components/WelcomeScreen";
+import ChatMessage from "./components/ChatMessage";
+import ChatInput from "./components/ChatInput";
+import LoadingIndicator from "./components/LoadingIndicator";
+import ErrorMessage from "./components/ErrorMessage";
+import DocumentsView from "./components/DocumentsView";
+import AboutView from "./components/AboutView";
+import {
+  sendChatMessage,
+  fetchConversations,
+  fetchConversation,
+  deleteConversation,
+} from "./services/api";
 import "./App.css";
 
-const API_URL = "http://127.0.0.1:8000";
-
 function App() {
-  const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [lastQuestion, setLastQuestion] = useState("");
+  const [activeTab, setActiveTab] = useState("chat");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const askQuestion = async (event) => {
-    event.preventDefault();
+  // Conversation history state
+  const [currentConversationId, setCurrentConversationId] = useState(null);
+  const [conversations, setConversations] = useState([]);
 
-    if (!question.trim() || loading) return;
+  const messagesEndRef = useRef(null);
 
-    const userQuestion = question.trim();
+  // Load conversation list on mount
+  useEffect(() => {
+    let ignore = false;
+    fetchConversations()
+      .then((list) => {
+        if (!ignore) {
+          setConversations(list || []);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load conversations:", err);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
-    setMessages((previous) => [
-      ...previous,
+  const refreshConversations = useCallback(async () => {
+    try {
+      const list = await fetchConversations();
+      setConversations(list || []);
+    } catch (err) {
+      console.error("Failed to refresh conversations:", err);
+    }
+  }, []);
+
+  // Auto-scroll to bottom whenever messages or loading state changes
+  useEffect(() => {
+    if (activeTab === "chat") {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, loading, error, activeTab]);
+
+  const handleSendMessage = async (userQuestion) => {
+    const trimmed = userQuestion.trim();
+    if (!trimmed || loading) return;
+
+    // Reset error on new attempt
+    setError(null);
+    setLastQuestion(trimmed);
+
+    // Switch to chat view if triggered from Documents or Welcome
+    setActiveTab("chat");
+
+    // Append user message immediately
+    setMessages((prev) => [
+      ...prev,
       {
+        id: `user-${Date.now()}`,
         role: "user",
-        content: userQuestion,
+        content: trimmed,
       },
     ]);
 
-    setQuestion("");
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/chat`, {
-        question: userQuestion,
-      });
+      const data = await sendChatMessage(trimmed, undefined, currentConversationId);
 
-      const data = response.data;
+      // If new session, set active conversation ID
+      if (!currentConversationId && data.conversation_id) {
+        setCurrentConversationId(data.conversation_id);
+      }
 
-      setMessages((previous) => [
-        ...previous,
+      setMessages((prev) => [
+        ...prev,
         {
+          id: `assistant-${Date.now()}`,
           role: "assistant",
           content: data.answer,
           sources: data.sources || [],
+          retrievedDocuments: data.retrieved_documents,
         },
       ]);
-    } catch (error) {
-      console.error("Chat error:", error);
 
-      const errorMessage =
-        (typeof error.response?.data?.detail === "string" && error.response.data.detail) ||
-        "Sorry, something went wrong while processing your question. Please check whether the backend is running.";
-
-      setMessages((previous) => [
-        ...previous,
-        {
-          role: "assistant",
-          content: errorMessage,
-          sources: [],
-        },
-      ]);
+      // Refresh recent conversations list so new chat or update appears
+      await refreshConversations();
+    } catch (err) {
+      console.error("Chat error occurred:", err);
+      setError({
+        message: err.message,
+        question: trimmed,
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  const handleSelectConversation = async (convId) => {
+    if (convId === currentConversationId || loading) return;
+
+    setError(null);
+    setLoading(true);
+    try {
+      const detail = await fetchConversation(convId);
+      setCurrentConversationId(convId);
+
+      const restoredMessages = (detail.messages || []).map((m) => ({
+        id: m.id,
+        role: m.role,
+        content: m.content,
+        sources: m.sources || [],
+        retrievedDocuments: m.sources ? m.sources.length : 0,
+      }));
+
+      setMessages(restoredMessages);
+      setActiveTab("chat");
+      setLastQuestion("");
+    } catch (err) {
+      console.error("Failed to restore conversation:", err);
+      setError({
+        message: "Failed to load conversation history.",
+        question: "",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteConversation = async (convId) => {
+    try {
+      await deleteConversation(convId);
+      setConversations((prev) => prev.filter((c) => c.id !== convId));
+
+      // If the deleted conversation was the active one, start fresh
+      if (currentConversationId === convId) {
+        setCurrentConversationId(null);
+        setMessages([]);
+        setError(null);
+        setLastQuestion("");
+        setActiveTab("chat");
+      }
+    } catch (err) {
+      console.error("Failed to delete conversation:", err);
+    }
+  };
+
+  const handleRetry = () => {
+    if (lastQuestion) {
+      setError(null);
+      // Remove last user message if we are retrying to avoid duplicate display
+      setMessages((prev) => {
+        if (prev.length > 0 && prev[prev.length - 1].role === "user") {
+          return prev.slice(0, -1);
+        }
+        return prev;
+      });
+      handleSendMessage(lastQuestion);
+    }
+  };
+
+  const handleNewChat = () => {
+    setCurrentConversationId(null);
+    setMessages([]);
+    setError(null);
+    setLastQuestion("");
+    setActiveTab("chat");
+  };
+
   return (
-    <div className="app">
-      <header className="app-header">
-        <div>
-          <h1>McLaren Knowledge Assistant</h1>
-          <p>Ask questions about company documents and policies.</p>
-        </div>
-      </header>
+    <div className="app-shell">
+      {/* Sidebar Navigation */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        onNewChat={handleNewChat}
+        documentCount={20}
+        conversations={conversations}
+        currentConversationId={currentConversationId}
+        onSelectConversation={handleSelectConversation}
+        onDeleteConversation={handleDeleteConversation}
+      />
 
-      <main className="chat-container">
-        {messages.length === 0 && (
-          <section className="welcome-card">
-            <h2>How can I help you?</h2>
-            <p>
-              Ask about employee policies, onboarding, projects, leave,
-              training, cybersecurity, and other company documents.
-            </p>
-
-            <div className="example-questions">
-              <button
-                onClick={() =>
-                  setQuestion("What is the employee leave policy?")
-                }
-              >
-                What is the employee leave policy?
-              </button>
-
-              <button
-                onClick={() =>
-                  setQuestion("Explain the employee onboarding process.")
-                }
-              >
-                Explain the employee onboarding process.
-              </button>
-
-              <button
-                onClick={() =>
-                  setQuestion("What are the software development standards?")
-                }
-              >
-                What are the software development standards?
-              </button>
-            </div>
-          </section>
-        )}
-
-        <section className="messages">
-          {messages.map((message, index) => (
-            <div
-              className={`message ${message.role === "user" ? "user-message" : "assistant-message"
-                }`}
-              key={index}
-            >
-              <div className="message-role">
-                {message.role === "user" ? "You" : "Assistant"}
-              </div>
-
-              <div className="message-content">{message.content}</div>
-
-              {message.sources && message.sources.length > 0 && (
-                <div className="sources">
-                  <h4>Sources</h4>
-
-                  {message.sources.map((source, sourceIndex) => (
-                    <div className="source-item" key={sourceIndex}>
-                      <strong>
-                        {source.filename || source.source || "Document"}
-                      </strong>
-
-                      {source.page && (
-                        <span> — Page {source.page}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-
-          {loading && (
-            <div className="message assistant-message">
-              <div className="message-role">Assistant</div>
-              <div className="message-content loading">
-                Thinking...
-              </div>
-            </div>
-          )}
-        </section>
-      </main>
-
-      <form className="chat-input-area" onSubmit={askQuestion}>
-        <input
-          type="text"
-          placeholder="Ask a question about company documents..."
-          value={question}
-          onChange={(event) => setQuestion(event.target.value)}
-          disabled={loading}
+      {/* Main Workspace */}
+      <div className="workspace-container">
+        <Header
+          onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+          activeTab={activeTab}
         />
 
-        <button type="submit" disabled={loading || !question.trim()}>
-          {loading ? "Sending..." : "Send"}
-        </button>
-      </form>
+        <main className="content-area">
+          {activeTab === "documents" && (
+            <DocumentsView
+              onAskQuestion={(q) => {
+                setActiveTab("chat");
+                handleSendMessage(q);
+              }}
+            />
+          )}
+
+          {activeTab === "about" && <AboutView />}
+
+          {activeTab === "chat" && (
+            <div className="chat-interface">
+              <div className="messages-scroll-area">
+                {messages.length === 0 ? (
+                  <WelcomeScreen onSelectQuestion={handleSendMessage} />
+                ) : (
+                  <div className="messages-list" role="log" aria-live="polite">
+                    {messages.map((msg) => (
+                      <ChatMessage key={msg.id} message={msg} />
+                    ))}
+
+                    {loading && <LoadingIndicator />}
+
+                    {error && (
+                      <ErrorMessage
+                        error={error}
+                        onRetry={handleRetry}
+                      />
+                    )}
+
+                    <div ref={messagesEndRef} />
+                  </div>
+                )}
+              </div>
+
+              {/* Sticky Chat Input Box */}
+              <ChatInput
+                onSendMessage={handleSendMessage}
+                disabled={loading}
+              />
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

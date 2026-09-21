@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 from google import genai
 from google.genai import errors
@@ -57,8 +58,13 @@ class LLMService:
         self.max_retries = max_retries if max_retries is not None else settings.LLM_MAX_RETRIES
         self.retry_delay = retry_delay if retry_delay is not None else settings.LLM_RETRY_DELAY
 
-    def generate_answer(self, question: str, context: str) -> str:
-        """Generate an answer using only the retrieved context."""
+    def generate_answer(
+        self,
+        question: str,
+        context: str,
+        chat_history: list[dict] | None = None,
+    ) -> str:
+        """Generate an answer using only the retrieved context and optional short-term history."""
 
         if not question.strip():
             raise ValueError("Question cannot be empty")
@@ -66,10 +72,19 @@ class LLMService:
         if not context.strip():
             return "I could not find relevant information in the documents."
 
+        history_block = ""
+        if chat_history:
+            turns = []
+            for item in chat_history:
+                role = "User" if item.get("role") == "user" else "Assistant"
+                turns.append(f"{role}: {item.get('content', '')}")
+            history_block = "\nRecent Conversation History:\n" + "\n".join(turns) + "\n"
+
         prompt = f"""
 You are a helpful enterprise document assistant.
 
 Answer the user's question using only the provided context.
+Take into account the recent conversation history when interpreting follow-up questions, but base your factual answer strictly on the retrieved context.
 
 Rules:
 1. Do not use outside knowledge.
@@ -79,7 +94,7 @@ Rules:
 4. Give a clear and concise answer.
 5. Include source references such as [Source 1] or [Source 2]
    wherever appropriate.
-
+{history_block}
 User Question:
 {question}
 
@@ -152,3 +167,57 @@ Answer:
         raise LLMUnavailableError(
             "The Gemini AI service is temporarily experiencing high demand (503 Service Unavailable). Please try again in a moment."
         )
+
+    def contextualize_query(self, question: str, chat_history: list[dict]) -> str:
+        """Rephrase ambiguous follow-up questions into standalone search queries."""
+        if not chat_history:
+            return question.strip()
+
+        turns = []
+        for item in chat_history:
+            role = "User" if item.get("role") == "user" else "Assistant"
+            turns.append(f"{role}: {item.get('content', '')}")
+
+        history_text = "\n".join(turns)
+
+        prompt = f"""You are a search query optimizer for an enterprise knowledge retrieval system.
+
+Given the recent conversation history and the latest user question, rephrase the user question into a standalone, keyword-rich search query suitable for document retrieval.
+
+Rules:
+1. Resolve all ambiguous pronouns or references (such as "it", "that", "what about probation") using the conversation context.
+2. Do NOT answer the question.
+3. Output ONLY the standalone search query without preamble, quotes, or markdown formatting.
+4. If the question is already clear and self-contained, return it unchanged.
+
+Recent Conversation History:
+{history_text}
+
+Latest User Question:
+{question}
+
+Standalone Search Query:"""
+
+        try:
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+            )
+            reformulated = (response.text or "").strip()
+            # Clean up quotes or prefixes
+            reformulated = re.sub(
+                r"^(Standalone Search Query:|\"|\')",
+                "",
+                reformulated,
+                flags=re.IGNORECASE,
+            )
+            reformulated = reformulated.rstrip("\"' \n.")
+            if reformulated:
+                return reformulated
+            return question.strip()
+        except Exception as e:
+            logger.warning(
+                "Contextualization query generation failed (%s); falling back to raw question.",
+                e,
+            )
+            return question.strip()

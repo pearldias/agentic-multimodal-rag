@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     GEMINI_EMBEDDING_MODEL: str = "gemini-embedding-001"
     EMBEDDING_DIMENSION: int = 768
 
+    # Gemini LLM Configuration
+    GEMINI_LLM_MODEL: str = "gemini-3.6-flash"
+    LLM_MAX_RETRIES: int = 3
+    LLM_RETRY_DELAY: float = 2.0
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

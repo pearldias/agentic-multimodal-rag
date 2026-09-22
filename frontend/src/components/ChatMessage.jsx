@@ -146,7 +146,12 @@ export default function ChatMessage({ message }) {
           {isUser ? (
             <p className="user-text">{message.content}</p>
           ) : (
-            <FormattedContent text={message.content} />
+            <div className="assistant-content-wrapper">
+              <FormattedContent text={message.content} />
+              {message.isStreaming && (
+                <span className="streaming-cursor" aria-hidden="true" />
+              )}
+            </div>
           )}
         </div>
 

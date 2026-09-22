@@ -1,8 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function ChatInput({ onSendMessage, disabled }) {
+export default function ChatInput({
+  onSendMessage,
+  onUploadFile,
+  disabled,
+  uploading,
+}) {
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Auto-resize textarea height based on content up to 160px
   useEffect(() => {
@@ -16,7 +22,7 @@ export default function ChatInput({ onSendMessage, disabled }) {
   const handleSubmit = (e) => {
     e?.preventDefault();
     const query = text.trim();
-    if (!query || disabled) return;
+    if (!query || disabled || uploading) return;
 
     onSendMessage(query);
     setText("");
@@ -35,6 +41,18 @@ export default function ChatInput({ onSendMessage, disabled }) {
     }
   };
 
+  const handleAttachmentClick = () => {
+    if (disabled || uploading) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0] && onUploadFile) {
+      onUploadFile(e.target.files[0]);
+      e.target.value = "";
+    }
+  };
+
   return (
     <div className="chat-input-wrapper">
       <form className="chat-input-form" onSubmit={handleSubmit}>
@@ -45,41 +63,63 @@ export default function ChatInput({ onSendMessage, disabled }) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask anything about company knowledge, policies, or SOPs..."
-            disabled={disabled}
+            placeholder={
+              uploading
+                ? "Uploading and indexing document into knowledge base..."
+                : "Ask anything about company knowledge, policies, or SOPs..."
+            }
+            disabled={disabled || uploading}
             aria-label="Ask a question"
             className="chat-textarea"
           />
 
           <div className="input-actions">
-            {/* Attachment Button UI (Disabled with tooltip) */}
+            {/* Hidden File Input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".pdf,.docx,.xlsx,.txt"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+
+            {/* Attachment Button */}
             <button
               type="button"
-              className="action-icon-btn attachment-btn"
-              disabled
-              title="Document attachment (Upload API integration coming soon)"
+              className={`action-icon-btn attachment-btn ${uploading ? "uploading-active" : ""}`}
+              onClick={handleAttachmentClick}
+              disabled={disabled || uploading}
+              title={
+                uploading
+                  ? "Indexing document..."
+                  : "Attach & index document (PDF, DOCX, XLSX, TXT)"
+              }
               aria-label="Attach document"
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                width="18"
-                height="18"
-                aria-hidden="true"
-              >
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-              </svg>
+              {uploading ? (
+                <div className="upload-spinner" aria-label="Uploading" />
+              ) : (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  width="18"
+                  height="18"
+                  aria-hidden="true"
+                >
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                </svg>
+              )}
             </button>
 
             {/* Send Button */}
             <button
               type="submit"
-              className={`send-button ${text.trim() && !disabled ? "active" : ""}`}
-              disabled={!text.trim() || disabled}
+              className={`send-button ${text.trim() && !disabled && !uploading ? "active" : ""}`}
+              disabled={!text.trim() || disabled || uploading}
               aria-label="Send message"
             >
               <svg

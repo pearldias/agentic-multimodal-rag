@@ -124,3 +124,33 @@ class RAGService:
             "retrieved_documents": retrieval_result["retrieved_documents"],
             "search_query": retrieval_result.get("search_query", question),
         }
+
+    def ask_stream(
+        self,
+        question: str,
+        k: int | None = None,
+        conversation_id: str | None = None,
+    ):
+        """
+        Retrieve candidate chunks, rerank, and return metadata with token generator.
+        """
+        retrieval_result = self.answer_question(
+            question=question,
+            k=k,
+            conversation_id=conversation_id,
+        )
+
+        metadata = {
+            "question": question,
+            "search_query": retrieval_result.get("search_query", question),
+            "sources": retrieval_result["sources"],
+            "retrieved_documents": retrieval_result["retrieved_documents"],
+        }
+
+        token_stream = self.llm_service.generate_answer_stream(
+            question=question,
+            context=retrieval_result["context"],
+            chat_history=retrieval_result.get("history"),
+        )
+
+        return metadata, token_stream

@@ -49,13 +49,17 @@ class IngestionService:
             )
 
         # Keep the original filename separately.
-        # Do not modify parsed_document.filename because it is read-only.
         filename = original_filename or path.name
 
         parsed_document = self.parser_service.parse_file(
             file_path=path,
+            title=Path(filename).stem.replace("_", " ").title(),
             save=save,
         )
+
+        if original_filename:
+            parsed_document.metadata.filename = original_filename
+            parsed_document.metadata.title = Path(original_filename).stem.replace("_", " ").title()
 
         chunks = self.chunking_service.chunk_document(
             parsed_document

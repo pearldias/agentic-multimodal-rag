@@ -1,6 +1,7 @@
 import logging
 import re
 import time
+from typing import Iterator
 from google import genai
 from google.genai import errors
 
@@ -162,6 +163,122 @@ Answer:
 
             except Exception as e:
                 logger.error("Unexpected error during Gemini generation: %s", type(e).__name__)
+                raise LLMServiceError("Unexpected error during text generation.", status_code=500) from e
+
+        raise LLMUnavailableError(
+            "The Gemini AI service is temporarily experiencing high demand (503 Service Unavailable). Please try again in a moment."
+        )
+
+    def generate_answer_stream(
+        self,
+        question: str,
+        context: str,
+        chat_history: list[dict] | None = None,
+    ) -> Iterator[str]:
+        """Stream answer chunks using only the retrieved context and optional short-term history."""
+
+        if not question.strip():
+            raise ValueError("Question cannot be empty")
+
+        if not context.strip():
+            yield "I could not find relevant information in the documents."
+            return
+
+        history_block = ""
+        if chat_history:
+            turns = []
+            for item in chat_history:
+                role = "User" if item.get("role") == "user" else "Assistant"
+                turns.append(f"{role}: {item.get('content', '')}")
+            history_block = "\nRecent Conversation History:\n" + "\n".join(turns) + "\n"
+
+        prompt = f"""
+You are a helpful enterprise document assistant.
+
+Answer the user's question using only the provided context.
+Take into account the recent conversation history when interpreting follow-up questions, but base your factual answer strictly on the retrieved context.
+
+Rules:
+1. Do not use outside knowledge.
+2. If the context does not contain the answer, say:
+   "I could not find this information in the provided documents."
+3. Do not invent facts.
+4. Give a clear and concise answer.
+5. Include source references such as [Source 1] or [Source 2]
+   wherever appropriate.
+{history_block}
+User Question:
+{question}
+
+Retrieved Context:
+{context}
+
+Answer:
+"""
+
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                response_stream = self.client.models.generate_content_stream(
+                    model=self.model,
+                    contents=prompt,
+                )
+                for chunk in response_stream:
+                    if hasattr(chunk, "text") and chunk.text:
+                        yield chunk.text
+                return
+
+            except errors.ServerError as e:
+                is_503 = (
+                    getattr(e, "code", None) == 503
+                    or "503" in str(e)
+                    or "UNAVAILABLE" in str(e)
+                )
+                if is_503:
+                    logger.warning(
+                        "Gemini 503 UNAVAILABLE on streaming attempt %d/%d for model %s. Retrying...",
+                        attempt,
+                        self.max_retries,
+                        self.model,
+                    )
+                    if attempt < self.max_retries:
+                        time.sleep(self.retry_delay * attempt)
+                        continue
+                    raise LLMUnavailableError(
+                        "The Gemini AI service is temporarily experiencing high demand (503 Service Unavailable). Please try again in a moment."
+                    ) from e
+
+                logger.error("Gemini ServerError (status %s)", getattr(e, "code", "unknown"))
+                raise LLMServiceError(
+                    "The AI service encountered a server error. Please try again later.",
+                    status_code=502,
+                ) from e
+
+            except errors.ClientError as e:
+                logger.error("Gemini ClientError during streaming (status %s)", getattr(e, "code", "unknown"))
+                if getattr(e, "code", None) == 429 or "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                    raise LLMRateLimitError(
+                        "Gemini API rate limit exceeded. Please wait a moment and try again."
+                    ) from e
+                raise LLMServiceError(
+                    "The AI service request could not be processed.",
+                    status_code=400 if getattr(e, "code", None) == 400 else 502,
+                ) from e
+
+            except errors.APIError as e:
+                logger.error("Gemini APIError during streaming (status %s)", getattr(e, "code", "unknown"))
+                if getattr(e, "code", None) == 503 or "503" in str(e) or "UNAVAILABLE" in str(e):
+                    if attempt < self.max_retries:
+                        time.sleep(self.retry_delay * attempt)
+                        continue
+                    raise LLMUnavailableError(
+                        "The Gemini AI service is temporarily experiencing high demand (503 Service Unavailable). Please try again in a moment."
+                    ) from e
+                raise LLMServiceError("The AI service encountered an error.", status_code=502) from e
+
+            except Exception as e:
+                if isinstance(e, (LLMServiceError, LLMUnavailableError, LLMRateLimitError)):
+                    raise e
+                logger.error("Unexpected error during Gemini streaming: %s", type(e).__name__)
                 raise LLMServiceError("Unexpected error during text generation.", status_code=500) from e
 
         raise LLMUnavailableError(

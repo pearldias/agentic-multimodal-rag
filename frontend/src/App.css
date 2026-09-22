@@ -647,6 +647,32 @@
   vertical-align: baseline;
 }
 
+.assistant-content-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.streaming-cursor {
+  display: inline-block;
+  width: 6px;
+  height: 14px;
+  background-color: var(--primary);
+  margin-left: 3px;
+  vertical-align: -1px;
+  border-radius: 1px;
+  animation: cursor-blink 0.8s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 /* ==========================================================================
    Sources & Citations Accordion
    ========================================================================== */

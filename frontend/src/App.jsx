@@ -9,7 +9,7 @@ import ErrorMessage from "./components/ErrorMessage";
 import DocumentsView from "./components/DocumentsView";
 import AboutView from "./components/AboutView";
 import {
-  sendChatMessage,
+  streamChatMessage,
   fetchConversations,
   fetchConversation,
   deleteConversation,
@@ -74,11 +74,14 @@ function App() {
     // Switch to chat view if triggered from Documents or Welcome
     setActiveTab("chat");
 
+    const userMsgId = `user-${Date.now()}`;
+    const assistantMsgId = `assistant-${Date.now()}`;
+
     // Append user message immediately
     setMessages((prev) => [
       ...prev,
       {
-        id: `user-${Date.now()}`,
+        id: userMsgId,
         role: "user",
         content: trimmed,
       },
@@ -86,29 +89,107 @@ function App() {
 
     setLoading(true);
 
+    let streamStarted = false;
+
     try {
-      const data = await sendChatMessage(trimmed, undefined, currentConversationId);
-
-      // If new session, set active conversation ID
-      if (!currentConversationId && data.conversation_id) {
-        setCurrentConversationId(data.conversation_id);
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `assistant-${Date.now()}`,
-          role: "assistant",
-          content: data.answer,
-          sources: data.sources || [],
-          retrievedDocuments: data.retrieved_documents,
+      await streamChatMessage(trimmed, undefined, currentConversationId, {
+        onMetadata: (metadata) => {
+          if (!currentConversationId && metadata.conversation_id) {
+            setCurrentConversationId(metadata.conversation_id);
+          }
+          setMessages((prev) => {
+            const exists = prev.some((m) => m.id === assistantMsgId);
+            if (exists) {
+              return prev.map((m) =>
+                m.id === assistantMsgId
+                  ? {
+                      ...m,
+                      sources: metadata.sources || [],
+                      retrievedDocuments: metadata.retrieved_documents || 0,
+                    }
+                  : m
+              );
+            }
+            return [
+              ...prev,
+              {
+                id: assistantMsgId,
+                role: "assistant",
+                content: "",
+                sources: metadata.sources || [],
+                retrievedDocuments: metadata.retrieved_documents || 0,
+                isStreaming: true,
+              },
+            ];
+          });
         },
-      ]);
-
-      // Refresh recent conversations list so new chat or update appears
-      await refreshConversations();
+        onToken: (token) => {
+          if (!streamStarted) {
+            streamStarted = true;
+            setLoading(false);
+          }
+          setMessages((prev) => {
+            const exists = prev.some((m) => m.id === assistantMsgId);
+            if (exists) {
+              return prev.map((m) =>
+                m.id === assistantMsgId
+                  ? {
+                      ...m,
+                      content: m.content + token,
+                      isStreaming: true,
+                    }
+                  : m
+              );
+            }
+            return [
+              ...prev,
+              {
+                id: assistantMsgId,
+                role: "assistant",
+                content: token,
+                sources: [],
+                retrievedDocuments: 0,
+                isStreaming: true,
+              },
+            ];
+          });
+        },
+        onDone: async (doneData) => {
+          setLoading(false);
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMsgId
+                ? {
+                    ...m,
+                    content: doneData.answer || m.content,
+                    sources: doneData.sources || m.sources,
+                    isStreaming: false,
+                  }
+                : m
+            )
+          );
+          if (!currentConversationId && doneData.conversation_id) {
+            setCurrentConversationId(doneData.conversation_id);
+          }
+          await refreshConversations();
+        },
+        onError: (err) => {
+          setLoading(false);
+          setMessages((prev) =>
+            prev.filter((m) => m.id !== assistantMsgId || m.content.trim().length > 0)
+          );
+          setError({
+            message: err.message,
+            question: trimmed,
+          });
+        },
+      });
     } catch (err) {
-      console.error("Chat error occurred:", err);
+      console.error("Chat streaming error occurred:", err);
+      setLoading(false);
+      setMessages((prev) =>
+        prev.filter((msg) => msg.id !== assistantMsgId || msg.content.trim().length > 0)
+      );
       setError({
         message: err.message,
         question: trimmed,

@@ -1170,11 +1170,19 @@
   margin-bottom: 24px;
 }
 
+.doc-page-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
 .doc-page-title-group {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 6px;
 }
 
 .doc-page-title-group h2 {
@@ -1594,6 +1602,164 @@
 .meta-value.text-green {
   color: var(--success-text);
 }
+
+/* ==========================================================================
+   Upload Components & Notifications
+   ========================================================================== */
+.primary-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--primary);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+}
+
+.primary-upload-btn:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(37, 99, 235, 0.25);
+}
+
+.primary-upload-btn:disabled,
+.primary-upload-btn.uploading-active {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.action-icon-btn.uploading-active {
+  color: var(--primary);
+  cursor: not-allowed;
+}
+
+.upload-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.2px solid rgba(37, 99, 235, 0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: upload-spin 0.75s linear infinite;
+  display: inline-block;
+}
+
+.upload-spinner-sm {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: upload-spin 0.75s linear infinite;
+  display: inline-block;
+}
+
+.toast-loading .upload-spinner-sm {
+  border-color: rgba(37, 99, 235, 0.25);
+  border-top-color: var(--primary);
+}
+
+@keyframes upload-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.upload-notification-toast {
+  position: absolute;
+  top: 72px;
+  right: 24px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 320px;
+  max-width: 480px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  font-weight: 500;
+  animation: slide-toast 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease;
+}
+
+@keyframes slide-toast {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.upload-notification-toast.toast-loading {
+  background-color: #ffffff;
+  border: 1px solid var(--border-focus);
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+
+.upload-notification-toast.toast-success {
+  background-color: var(--success-bg);
+  border: 1px solid #a7f3d0;
+  color: var(--success-text);
+}
+
+.upload-notification-toast.toast-error {
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error-text);
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-icon {
+  flex-shrink: 0;
+}
+
+.toast-success-icon {
+  color: var(--success-dot);
+}
+
+.toast-error-icon {
+  color: var(--error-text);
+}
+
+.toast-message {
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: currentColor;
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  transition: opacity 0.15s ease;
+}
+
+.toast-close-btn:hover {
+  opacity: 1;
+}
+
 
 /* ==========================================================================
    Responsive Breakpoints

@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from backend.app.core.config import settings
+from backend.app.core.exceptions import DocumentIngestionError
 from backend.app.services.ingestion import IngestionService
 
 
@@ -140,6 +141,19 @@ async def upload_document(file: UploadFile = File(...)):
         if destination_path.exists():
             destination_path.unlink(missing_ok=True)
         raise
+
+    except DocumentIngestionError as error:
+        if destination_path.exists():
+            destination_path.unlink(missing_ok=True)
+        logger.warning(
+            "Document parsing/validation error for %s: %s",
+            original_filename,
+            error,
+        )
+        raise HTTPException(
+            status_code=400,
+            detail=str(error),
+        ) from error
 
     except Exception as error:
         if destination_path.exists():

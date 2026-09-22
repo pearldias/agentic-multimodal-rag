@@ -105,3 +105,14 @@ class VectorStoreService:
 
         collection = self.vector_store._collection
         return collection.count()
+
+    def delete_by_filename(self, filename: str) -> None:
+        """Remove any existing chunks for a document filename."""
+
+        if not filename or not filename.strip():
+            return
+
+        try:
+            self.vector_store._collection.delete(where={"filename": filename})
+        except Exception:
+            pass

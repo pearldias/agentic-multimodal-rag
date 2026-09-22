@@ -13,6 +13,8 @@ import {
   fetchConversations,
   fetchConversation,
   deleteConversation,
+  uploadDocument,
+  fetchDocuments,
 } from "./services/api";
 import "./App.css";
 
@@ -28,9 +30,14 @@ function App() {
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [conversations, setConversations] = useState([]);
 
+  // Documents and upload state
+  const [documents, setDocuments] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadNotification, setUploadNotification] = useState(null);
+
   const messagesEndRef = useRef(null);
 
-  // Load conversation list on mount
+  // Load conversation list and documents on mount
   useEffect(() => {
     let ignore = false;
     fetchConversations()
@@ -42,6 +49,17 @@ function App() {
       .catch((err) => {
         console.error("Failed to load conversations:", err);
       });
+
+    fetchDocuments()
+      .then((docs) => {
+        if (!ignore && Array.isArray(docs) && docs.length > 0) {
+          setDocuments(docs);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load documents:", err);
+      });
+
     return () => {
       ignore = true;
     };
@@ -53,6 +71,17 @@ function App() {
       setConversations(list || []);
     } catch (err) {
       console.error("Failed to refresh conversations:", err);
+    }
+  }, []);
+
+  const refreshDocuments = useCallback(async () => {
+    try {
+      const docs = await fetchDocuments();
+      if (Array.isArray(docs) && docs.length > 0) {
+        setDocuments(docs);
+      }
+    } catch (err) {
+      console.error("Failed to refresh documents:", err);
     }
   }, []);
 
@@ -270,6 +299,59 @@ function App() {
     setActiveTab("chat");
   };
 
+  const handleUploadFile = async (file) => {
+    if (!file || uploading) return;
+
+    const allowedExtensions = [".pdf", ".docx", ".xlsx", ".txt"];
+    const ext = "." + file.name.split(".").pop().toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      setUploadNotification({
+        type: "error",
+        message: `Unsupported file format "${ext}". Please upload a PDF, DOCX, XLSX, or TXT document.`,
+      });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadNotification({
+        type: "error",
+        message: `File "${file.name}" exceeds the maximum size limit of 10 MB.`,
+      });
+      return;
+    }
+
+    setUploading(true);
+    setUploadNotification({
+      type: "loading",
+      message: `Uploading and indexing "${file.name}" into ChromaDB...`,
+    });
+
+    try {
+      const result = await uploadDocument(file);
+      const chunkCount = result.chunks_stored || result.chunks_created || 0;
+      setUploadNotification({
+        type: "success",
+        message: `"${file.name}" uploaded and indexed successfully (${chunkCount} chunks created).`,
+      });
+
+      await refreshDocuments();
+
+      setTimeout(() => {
+        setUploadNotification((prev) =>
+          prev?.type === "success" ? null : prev
+        );
+      }, 5000);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      setUploadNotification({
+        type: "error",
+        message: err.message || `Failed to process and index "${file.name}".`,
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="app-shell">
       {/* Sidebar Navigation */}
@@ -279,7 +361,7 @@ function App() {
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         onNewChat={handleNewChat}
-        documentCount={20}
+        documentCount={documents.length || 20}
         conversations={conversations}
         currentConversationId={currentConversationId}
         onSelectConversation={handleSelectConversation}
@@ -293,13 +375,77 @@ function App() {
           activeTab={activeTab}
         />
 
+        {/* Upload Status Notification Toast */}
+        {uploadNotification && (
+          <div
+            className={`upload-notification-toast toast-${uploadNotification.type}`}
+            role="status"
+            aria-live="polite"
+          >
+            <div className="toast-content">
+              {uploadNotification.type === "loading" && (
+                <div className="upload-spinner-sm" aria-label="Indexing" />
+              )}
+              {uploadNotification.type === "success" && (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  width="16"
+                  height="16"
+                  className="toast-icon toast-success-icon"
+                  aria-hidden="true"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+              {uploadNotification.type === "error" && (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  width="16"
+                  height="16"
+                  className="toast-icon toast-error-icon"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              )}
+              <span className="toast-message">{uploadNotification.message}</span>
+            </div>
+
+            {uploadNotification.type !== "loading" && (
+              <button
+                type="button"
+                className="toast-close-btn"
+                onClick={() => setUploadNotification(null)}
+                aria-label="Dismiss notification"
+              >
+                &times;
+              </button>
+            )}
+          </div>
+        )}
+
         <main className="content-area">
           {activeTab === "documents" && (
             <DocumentsView
+              documents={documents}
               onAskQuestion={(q) => {
                 setActiveTab("chat");
                 handleSendMessage(q);
               }}
+              onUploadFile={handleUploadFile}
+              uploading={uploading}
             />
           )}
 
@@ -333,7 +479,9 @@ function App() {
               {/* Sticky Chat Input Box */}
               <ChatInput
                 onSendMessage={handleSendMessage}
+                onUploadFile={handleUploadFile}
                 disabled={loading}
+                uploading={uploading}
               />
             </div>
           )}

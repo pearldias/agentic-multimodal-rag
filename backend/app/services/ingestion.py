@@ -65,6 +65,10 @@ class IngestionService:
             parsed_document
         )
 
+        # Remove any existing chunks for this filename to ensure clean idempotency.
+        if hasattr(self.vector_store_service, "delete_by_filename"):
+            self.vector_store_service.delete_by_filename(filename)
+
         # Store the generated chunks in ChromaDB.
         stored_chunks = self.vector_store_service.add_chunks(
             chunks

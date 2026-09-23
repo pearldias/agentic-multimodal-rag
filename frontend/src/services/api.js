@@ -1,6 +1,11 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL !== undefined
+    ? import.meta.env.VITE_API_URL
+    : import.meta.env.DEV
+    ? "http://127.0.0.1:8000"
+    : "";
 
 /**
  * Send a question to the RAG backend with optional conversation session.

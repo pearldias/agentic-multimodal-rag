@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.log
+.pytest_cache/
+.venv/
+venv/
+.env
+.git/
+tests/
+data/chroma/
+data/processed/
+data/raw/
+*.db

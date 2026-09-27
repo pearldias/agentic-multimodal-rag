@@ -13,3 +13,4 @@ python-multipart
 cohere>=7.1.0
 langchain-text-splitters>=1.1.0,<2.0.0
 langchain-chroma>=1.1.0,<2.0.0
+mcp>=2.2.0

@@ -40,6 +40,7 @@ from backend.app.api.routes.upload import router as upload_router
 from backend.app.api.routes.chat import router as chat_router
 from backend.app.api.routes.conversations import router as conversations_router
 from backend.app.api.routes.health import router as health_router
+from backend.app.api.routes.notion import router as notion_router
 from backend.app.core.config import settings
 from backend.app.core.logging import setup_logging
 from backend.app.db.database import init_db
@@ -96,3 +97,4 @@ app.include_router(health_router)
 app.include_router(chat_router)
 app.include_router(conversations_router)
 app.include_router(upload_router)
+app.include_router(notion_router)

@@ -1,0 +1,37 @@
+# Version control & OS
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python & environments
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.log
+
+# Sensitive credentials & environment variables
+.env
+.env.*
+!.env.example
+.notion_auth.json
+*.notion_auth.json
+data/.notion_auth.json
+data/.notion_oauth_code.json
+
+# Local persistent data (mounted via volume instead)
+data/
+uploads/
+chroma_db/
+*.db
+
+# Frontend source (built separately in frontend service)
+frontend/
+node_modules/
+dist/

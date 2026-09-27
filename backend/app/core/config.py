@@ -31,7 +31,9 @@ class Settings(BaseSettings):
     EMBEDDING_DIMENSION: int = 768
 
     # Gemini LLM Configuration
-    GEMINI_LLM_MODEL: str = "gemini-3.6-flash"
+    # Temporarily switched from "gemini-3.6-flash" to bypass quota limits.
+    # Revert to "gemini-3.6-flash" when quota resets.
+    GEMINI_LLM_MODEL: str = "gemini-3.5-flash-lite"
     LLM_MAX_RETRIES: int = 3
     LLM_RETRY_DELAY: float = 2.0
 
@@ -40,6 +42,14 @@ class Settings(BaseSettings):
     COHERE_RERANK_MODEL: str = "rerank-v4.0-fast"
     RERANK_INITIAL_K: int = 15
     RERANK_TOP_K: int = 5
+
+    # Notion MCP Configuration
+    NOTION_MCP_URL: str = "https://mcp.notion.com/mcp"
+    NOTION_AUTH_SERVER_URL: str = "https://mcp.notion.com"
+    NOTION_REDIRECT_URI: str = "http://localhost:8000/api/notion/callback"
+    NOTION_CLIENT_NAME: str = "Agentic RAG Notion Client"
+    NOTION_TOKEN_PATH: str = "data/.notion_auth.json"
+    NOTION_DAILY_TASKS_DATABASE_ID: str = "3e58c53d-f08d-800a-bb8e-cd75db304c97"
 
     model_config = SettingsConfigDict(
         env_file=".env",

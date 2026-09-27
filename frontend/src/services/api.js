@@ -278,3 +278,151 @@ export async function fetchDocuments() {
     return [];
   }
 }
+
+/**
+ * Fetch connection and authentication status of the Notion MCP client.
+ * @returns {Promise<{authenticated: boolean, server_url: string, redirect_uri: string, token_path: string, token_file_exists: boolean, daily_tasks_db_id: string, cached_tools_count: number}>}
+ */
+export async function fetchNotionStatus() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/notion/status`);
+    return response.data;
+  } catch (error) {
+    console.error("API error fetching Notion status:", error);
+    throw error;
+  }
+}
+
+/**
+ * Query daily tasks from Notion through the FastAPI Notion MCP client.
+ * @param {object} [params]
+ * @param {string} [params.databaseId]
+ * @param {string} [params.dueDate]
+ * @param {string} [params.status]
+ * @returns {Promise<{tasks: Array<{id: string, name: string, status: string, priority: string, due_date: string, url: string}>, count: number}>}
+ */
+export async function fetchNotionTasks(params = {}) {
+  try {
+    const queryParams = {};
+    if (params.databaseId) queryParams.database_id = params.databaseId;
+    if (params.dueDate) queryParams.due_date = params.dueDate;
+    if (params.status) queryParams.status = params.status;
+
+    const response = await axios.get(`${API_BASE_URL}/api/notion/tasks`, {
+      params: queryParams,
+      timeout: 45000,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API error fetching Notion tasks:", error);
+    let message = "Failed to fetch tasks from Notion.";
+    if (typeof error.response?.data?.detail === "string") {
+      message = error.response.data.detail;
+    }
+    const err = new Error(message);
+    err.status = error.response?.status || 0;
+    throw err;
+  }
+}
+
+/**
+ * Fetch discovered Notion MCP tools.
+ * @returns {Promise<{tools: Array<{name: string, description: string, inputSchema: object}>, count: number}>}
+ */
+export async function fetchNotionTools() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/notion/tools`, {
+      timeout: 30000,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API error fetching Notion tools:", error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new meeting notes page in Notion via MCP tool.
+ * @param {object} data
+ * @param {string} data.title
+ * @param {string} [data.content]
+ * @param {string} [data.parent_page_id]
+ * @param {string} [data.parent_database_id]
+ * @param {string} [data.icon]
+ * @returns {Promise<{status: string, message: string, page_id?: string, page_url?: string, result: object}>}
+ */
+export async function createNotionMeetingNotes(data) {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/notion/meeting-notes`, data, {
+      timeout: 45000,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API error creating Notion meeting notes:", error);
+    let message = "Failed to create meeting notes in Notion.";
+    if (typeof error.response?.data?.detail === "string") {
+      message = error.response.data.detail;
+    }
+    const err = new Error(message);
+    err.status = error.response?.status || 0;
+    throw err;
+  }
+}
+
+/**
+ * Fetch full details of a specific Notion task directly via Notion MCP (notion-fetch).
+ * Does NOT query ChromaDB or the RAG pipeline.
+ * @param {string} pageId - The Notion page ID.
+ * @returns {Promise<{id: string, title: string, url: string, status: string, priority: string, due_date: string, last_edited_at: string, path: string, properties: object, content: string}>}
+ */
+export async function fetchNotionTaskDetails(pageId) {
+  try {
+    const cleanId = encodeURIComponent(pageId.trim());
+    const response = await axios.get(`${API_BASE_URL}/api/notion/tasks/${cleanId}`, {
+      timeout: 45000,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API error fetching Notion task details:", error);
+    let message = "Failed to fetch task details from Notion.";
+    if (typeof error.response?.data?.detail === "string") {
+      message = error.response.data.detail;
+    }
+    const err = new Error(message);
+    err.status = error.response?.status || 0;
+    throw err;
+  }
+}
+
+/**
+ * Ask a question to the dedicated Notion Workspace Assistant.
+ * Grounded strictly in Notion workspace data via Notion MCP tools.
+ * Does NOT query ChromaDB or the document RAG pipeline.
+ * @param {string} question - The user query about Notion tasks/projects.
+ * @param {string|null} [conversationId] - Optional conversation session ID.
+ * @returns {Promise<{question: string, answer: string, referenced_tasks: Array<object>}>}
+ */
+export async function sendNotionChatMessage(question, conversationId = null) {
+  try {
+    const payload = { question: question.trim() };
+    if (conversationId) {
+      payload.conversation_id = conversationId;
+    }
+
+    const response = await axios.post(`${API_BASE_URL}/api/notion/chat`, payload, {
+      timeout: 60000,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API error in Notion chat:", error);
+    let message = "Failed to get response from Notion Assistant.";
+    if (typeof error.response?.data?.detail === "string") {
+      message = error.response.data.detail;
+    }
+    const err = new Error(message);
+    err.status = error.response?.status || 0;
+    throw err;
+  }
+}
+
+

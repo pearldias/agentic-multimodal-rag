@@ -27,9 +27,99 @@ An enterprise-ready Multimodal Retrieval-Augmented Generation (RAG) chatbot desi
 - **Granular Metadata Tracking**: Preserves filename, file type, title, source URL, page numbers, Excel sheet names, and ISO 8601 UTC ingestion timestamps.
 - **Validation Engine**: Robust custom exceptions for unsupported file types, 0-byte or whitespace-only documents, and corrupted file structures.
 - **Practical Pydantic Models**: Clean schemas for `ParsedDocument`, `ParsedPage`, and `DocumentMetadata`.
-- **Detailed History**: Full log of all architectural decisions and updates available in `CHANGELOG.md`.
+### Milestone 4: Notion MCP Client & Workspace Integration
+- **Notion Model Context Protocol (MCP)**: Native integration connecting to Notion's official MCP server (`https://mcp.notion.com/mcp`) using Python MCP SDK v2.2.0 and Streamable HTTP.
+- **OAuth 2.0 + PKCE Authorization**: Dynamic client registration, PKCE S256 code challenge, and RFC 6749 §2.3.1 compliant client authentication (`client_secret_basic`).
+- **Secure Token Storage**: Persists OAuth tokens and client registration locally in `data/.notion_auth.json` (strictly excluded from Git and Docker images).
+- **Dynamic Tool Discovery**: Automatic discovery and negotiation of 45 Notion MCP tools (including `notion-fetch`, `notion-create-pages`, `notion-query-data-sources`, etc.).
+- **Live Daily Tasks Integration**: Direct live querying of Notion databases without hardcoded entries.
+- **Meeting Notes Generation**: Creates rich Markdown meeting notes pages directly in Notion workspace using the `notion-create-pages` tool.
+- **React Frontend UI**: Integrated "Notion Tasks" dashboard card and workspace view with status/priority badges, external links, refresh button, and meeting notes creator modal.
 
 ---
+
+## Notion MCP Architecture
+
+```text
+┌─────────────────┐        HTTP (Axios)        ┌─────────────────────────┐
+│   React UI      │ ─────────────────────────> │   FastAPI Backend       │
+│ (Notion Tasks / │                            │   (/api/notion/*)       │
+│  Meeting Notes) │ <───────────────────────── │                         │
+└─────────────────┘        JSON Payload        └────────────┬────────────┘
+                                                            │
+                                                            │ Python In-Process
+                                                            ▼
+                                               ┌─────────────────────────┐
+                                               │    NotionMCPClient      │
+                                               │ (mcp_server/notion_... )│
+                                               └────────────┬────────────┘
+                                                            │
+                                                            │ Streamable HTTP (SSE)
+                                                            ▼
+                                               ┌─────────────────────────┐
+                                               │  Notion Official MCP    │
+                                               │ (https://mcp.notion.com)│
+                                               └────────────┬────────────┘
+                                                            │
+                                                            │ Internal Notion API
+                                                            ▼
+                                               ┌─────────────────────────┐
+                                               │    Notion Workspace     │
+                                               │ (Daily Tasks / Pages)   │
+                                               └─────────────────────────┘
+```
+
+### Notion MCP Endpoints
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/notion/status` | Diagnostic connection status, redirect URI, database ID, and token status |
+| `GET` | `/api/notion/tools` | Dynamically reports all discovered tools from the Notion MCP server |
+| `GET` | `/api/notion/tasks` | Live queries the Daily Tasks database via Notion MCP (`notion-query-data-sources`) |
+| `POST` | `/api/notion/meeting-notes` | Creates a new page in Notion via `notion-create-pages` with title, content, and icon |
+| `GET` | `/api/notion/callback` | OAuth 2.0 PKCE browser authorization callback endpoint |
+
+### Authentication Flow (OAuth 2.0 + PKCE)
+1. **Dynamic Client Registration**: Registers with Notion authorization server, obtaining `client_id` and `client_secret`.
+2. **PKCE S256**: Generates `code_verifier` and `code_challenge` (S256).
+3. **Browser Consent**: Launches default browser for user approval.
+4. **Callback Handling**: Notion redirects to `http://localhost:8000/api/notion/callback`.
+5. **RFC 6749 §2.3.1 Token Exchange**: Credentials are sent strictly via HTTP Basic header (`Authorization: Basic ...`), purging duplicate body credentials.
+6. **Token Persistence**: Tokens are stored atomically in `data/.notion_auth.json` for automatic reuse and background refresh.
+
+---
+
+## Running Tests
+
+### 1. Offline Unit Test Suite (Default)
+Runs all unit tests (including Notion MCP mock tests):
+
+```bash
+python -m pytest backend/tests -v
+```
+
+### 2. Live Notion Integration Diagnostics
+To run verification against your live Notion workspace:
+
+```bash
+python test_notion_client.py --list-tools
+python test_notion_client.py --tasks
+```
+
+---
+
+## Docker Deployment
+
+The application includes a production-ready multi-container Docker setup:
+
+```bash
+# Build and run with Docker Compose
+docker compose up -d --build
+```
+
+- **Backend**: Python 3.12-slim container exposing port `8000`. Includes `mcp_server` package and dependencies.
+- **Frontend**: Nginx-based multi-stage container serving optimized React production build on port `80`.
+- **Security**: Local persistent tokens (`data/.notion_auth.json`), `.env`, and OAuth credentials are kept outside of images via `.dockerignore` and `.gitignore`. Mounting `./data:/app/data` preserves local state at runtime.
 
 ## Project Structure
 

@@ -3,6 +3,8 @@ export default function Header({ onToggleSidebar, activeTab }) {
     switch (activeTab) {
       case "documents":
         return "Knowledge Base Documents";
+      case "notion":
+        return "Notion Tasks & Workspace";
       case "about":
         return "About McLaren Knowledge Assistant";
       case "chat":
@@ -15,6 +17,8 @@ export default function Header({ onToggleSidebar, activeTab }) {
     switch (activeTab) {
       case "documents":
         return "Catalog of indexed company policies, guides, and engineering standards.";
+      case "notion":
+        return "Live Daily Tasks database query, tool discovery, and meeting notes via Notion MCP.";
       case "about":
         return "Architecture, design, and capabilities of the RAG system.";
       case "chat":

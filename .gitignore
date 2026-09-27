@@ -35,3 +35,9 @@ data/metadata/*
 .DS_Store
 Thumbs.db
 data/chroma/
+
+# Notion MCP Auth & Tokens
+.notion_auth.json
+*.notion_auth.json
+data/.notion_auth.json
+data/.notion_oauth_code.json

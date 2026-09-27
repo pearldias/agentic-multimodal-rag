@@ -8,6 +8,7 @@ import LoadingIndicator from "./components/LoadingIndicator";
 import ErrorMessage from "./components/ErrorMessage";
 import DocumentsView from "./components/DocumentsView";
 import AboutView from "./components/AboutView";
+import NotionTasksView from "./components/NotionTasksView";
 import {
   streamChatMessage,
   fetchConversations,
@@ -334,6 +335,24 @@ function App() {
         message: `"${file.name}" uploaded and indexed successfully (${chunkCount} chunks created).`,
       });
 
+      // Show attachment card in current chat interaction
+      const fileType = file.name.split(".").pop().toUpperCase();
+      const attachmentMsgId = `attachment-${Date.now()}`;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: attachmentMsgId,
+          role: "user",
+          content: "",
+          attachment: {
+            name: file.name,
+            type: fileType,
+            size: file.size,
+            status: "Uploaded",
+          },
+        },
+      ]);
+
       await refreshDocuments();
 
       setTimeout(() => {
@@ -448,6 +467,8 @@ function App() {
               uploading={uploading}
             />
           )}
+
+          {activeTab === "notion" && <NotionTasksView />}
 
           {activeTab === "about" && <AboutView />}
 

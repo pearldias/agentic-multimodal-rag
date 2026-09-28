@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: agentic-rag
+  labels:
+    name: agentic-rag
+    app.kubernetes.io/name: agentic-multimodal-rag
+    app.kubernetes.io/part-of: agentic-multimodal-rag

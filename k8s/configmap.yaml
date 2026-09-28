@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: agentic-rag
+  labels:
+    app: backend
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: agentic-multimodal-rag
+data:
+  PROJECT_NAME: "Multimodal RAG API"
+  VERSION: "0.1.0"
+  ENVIRONMENT: "development"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  GEMINI_EMBEDDING_MODEL: "gemini-embedding-001"
+  EMBEDDING_DIMENSION: "768"
+  GEMINI_LLM_MODEL: "gemini-3.5-flash-lite"
+  LLM_MAX_RETRIES: "3"
+  LLM_RETRY_DELAY: "2.0"
+  COHERE_RERANK_MODEL: "rerank-v4.0-fast"
+  RERANK_INITIAL_K: "15"
+  RERANK_TOP_K: "5"
+  NOTION_MCP_URL: "https://mcp.notion.com/mcp"
+  NOTION_AUTH_SERVER_URL: "https://mcp.notion.com"
+  NOTION_REDIRECT_URI: "http://localhost:8000/api/notion/callback"
+  NOTION_CLIENT_NAME: "Agentic RAG Notion Client"
+  NOTION_TOKEN_PATH: "data/.notion_auth.json"
+  NOTION_DAILY_TASKS_DATABASE_ID: "3e58c53d-f08d-800a-bb8e-cd75db304c97"

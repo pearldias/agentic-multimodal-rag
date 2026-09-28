@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: agentic-rag
+  labels:
+    app: backend
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: agentic-multimodal-rag
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+    app.kubernetes.io/component: backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP

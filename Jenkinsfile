@@ -34,7 +34,7 @@ pipeline {
 
                     echo "Running backend tests..."
                     docker run --rm \
-			-e PYTHONPATH=/app \
+                        -e PYTHONPATH=/app \
                         agentic-rag-backend-test:${BUILD_NUMBER} \
                         pytest backend/tests -q
                 '''
@@ -58,7 +58,7 @@ pipeline {
                         -f frontend/Dockerfile \
                         -t ${FRONTEND_IMAGE}:${BUILD_NUMBER} \
                         -t ${FRONTEND_IMAGE}:latest \
-                        .
+                        frontend
                 '''
             }
         }
@@ -99,6 +99,7 @@ pipeline {
                     set -e
 
                     echo "Applying Kubernetes manifests..."
+
                     ${KUBECTL} \
                         --kubeconfig=${KUBECONFIG} \
                         --insecure-skip-tls-verify=true \
@@ -107,7 +108,8 @@ pipeline {
                     ${KUBECTL} \
                         --kubeconfig=${KUBECONFIG} \
                         --insecure-skip-tls-verify=true \
-                        apply -f k8s/configmap.yaml \
+                        apply \
+                        -f k8s/configmap.yaml \
                         -f k8s/secret.yaml \
                         -f k8s/persistent-volume.yaml \
                         -f k8s/persistent-volume-claim.yaml \
@@ -118,6 +120,7 @@ pipeline {
                         -f k8s/ingress.yaml
 
                     echo "Updating backend image..."
+
                     ${KUBECTL} \
                         --kubeconfig=${KUBECONFIG} \
                         --insecure-skip-tls-verify=true \
@@ -126,6 +129,7 @@ pipeline {
                         backend=${BACKEND_IMAGE}:${BUILD_NUMBER}
 
                     echo "Updating frontend image..."
+
                     ${KUBECTL} \
                         --kubeconfig=${KUBECONFIG} \
                         --insecure-skip-tls-verify=true \
@@ -134,6 +138,7 @@ pipeline {
                         frontend=${FRONTEND_IMAGE}:${BUILD_NUMBER}
 
                     echo "Waiting for backend rollout..."
+
                     ${KUBECTL} \
                         --kubeconfig=${KUBECONFIG} \
                         --insecure-skip-tls-verify=true \
@@ -142,6 +147,7 @@ pipeline {
                         --timeout=180s
 
                     echo "Waiting for frontend rollout..."
+
                     ${KUBECTL} \
                         --kubeconfig=${KUBECONFIG} \
                         --insecure-skip-tls-verify=true \
@@ -158,6 +164,7 @@ pipeline {
                     set -e
 
                     echo "Kubernetes pods:"
+
                     ${KUBECTL} \
                         --kubeconfig=${KUBECONFIG} \
                         --insecure-skip-tls-verify=true \
@@ -166,6 +173,7 @@ pipeline {
 
                     echo ""
                     echo "Kubernetes services:"
+
                     ${KUBECTL} \
                         --kubeconfig=${KUBECONFIG} \
                         --insecure-skip-tls-verify=true \

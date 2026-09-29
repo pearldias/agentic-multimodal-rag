@@ -34,6 +34,7 @@ pipeline {
 
                     echo "Running backend tests..."
                     docker run --rm \
+			-e PYTHONPATH=/app \
                         agentic-rag-backend-test:${BUILD_NUMBER} \
                         pytest backend/tests -q
                 '''

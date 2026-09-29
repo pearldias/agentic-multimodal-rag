@@ -41,3 +41,5 @@ data/chroma/
 *.notion_auth.json
 data/.notion_auth.json
 data/.notion_oauth_code.json
+
+jenkins-kubeconfig.yaml

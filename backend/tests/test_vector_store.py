@@ -26,6 +26,7 @@ def test_vector_store_can_be_created(tmp_path: Path) -> None:
     service = VectorStoreService(
         persist_directory=tmp_path / "chroma",
         collection_name="test_collection",
+        embedding_service=FakeEmbeddingService(),
     )
 
     assert service.vector_store is not None

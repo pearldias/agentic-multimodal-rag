@@ -1,7 +1,12 @@
 from collections.abc import Generator
+from unittest.mock import patch
 import pytest
 from fastapi.testclient import TestClient
-from backend.app.main import app
+
+# Isolate route-level service instantiation from real external API keys during test collection
+with patch("backend.app.services.vector_store.EmbeddingService"), \
+     patch("backend.app.services.rag_service.LLMService"):
+    from backend.app.main import app
 
 
 @pytest.fixture(scope="session")

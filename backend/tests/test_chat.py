@@ -10,6 +10,13 @@ from backend.app.services.llm_service import (
 )
 
 
+@pytest.fixture(autouse=True)
+def mock_google_api_key_for_chat(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Ensure LLMService tests do not require a live GOOGLE_API_KEY or make external API calls."""
+    monkeypatch.setattr("backend.app.services.llm_service.settings.GOOGLE_API_KEY", "mock-test-key")
+    monkeypatch.setattr("backend.app.services.llm_service.genai.Client", MagicMock())
+
+
 def test_chat_endpoint_empty_question_returns_400(client: TestClient) -> None:
     """Verify POST /api/chat with empty question returns 400."""
     response = client.post("/api/chat", json={"question": "   "})

@@ -13,8 +13,13 @@ class FakeEmbeddingService:
         return [1.0, 0.0, 0.0]
 
 
-def test_ingestion_service_can_be_created() -> None:
-    service = IngestionService()
+def test_ingestion_service_can_be_created(tmp_path: Path) -> None:
+    vector_store = VectorStoreService(
+        persist_directory=tmp_path / "chroma",
+        collection_name="test_ingestion_create",
+        embedding_service=FakeEmbeddingService(),
+    )
+    service = IngestionService(vector_store_service=vector_store)
 
     assert service.parser_service is not None
     assert service.chunking_service is not None
@@ -27,7 +32,12 @@ def test_ingestion_directory_returns_summary(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    service = IngestionService()
+    vector_store = VectorStoreService(
+        persist_directory=tmp_path / "chroma",
+        collection_name="test_summary_collection",
+        embedding_service=FakeEmbeddingService(),
+    )
+    service = IngestionService(vector_store_service=vector_store)
 
     result = service.ingest_directory(
         directory=tmp_path,

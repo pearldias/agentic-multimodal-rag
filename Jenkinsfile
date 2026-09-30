@@ -110,7 +110,6 @@ pipeline {
                         --insecure-skip-tls-verify=true \
                         apply \
                         -f k8s/configmap.yaml \
-                        -f k8s/secret.yaml \
                         -f k8s/persistent-volume.yaml \
                         -f k8s/persistent-volume-claim.yaml \
                         -f k8s/backend-service.yaml \

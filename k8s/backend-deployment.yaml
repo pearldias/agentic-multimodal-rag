@@ -10,6 +10,8 @@ metadata:
     app.kubernetes.io/part-of: agentic-multimodal-rag
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: backend

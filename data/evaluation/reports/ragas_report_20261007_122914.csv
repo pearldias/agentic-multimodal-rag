@@ -1,0 +1,24 @@
+id,question,reference,response,faithfulness,answer_relevancy,context_precision,context_recall,retrieved_contexts_count,sources_summary
+eval_001,What is the annual planned leave allotment for employees at McLaren?,"Employees are allotted 20 days of planned leave per calendar year, which accrues monthly at 1.66 days per month.","The annual planned leave allotment for employees is 20 days per calendar year, which is accrued monthly at a rate of 1.66 days per month [Source 1, Source 3].",1.0,0.7946985314317583,0.8333333332916666,1.0,5,SYN_003_Leave_WFH_Policy.pdf (p.2); SYN_003_Leave_WFH_Policy.pdf (p.3); SYN_003_Leave_WFH_Policy.pdf (p.2); SYN_003_Leave_WFH_Policy.pdf (p.3); SYN_003_Leave_WFH_Policy.pdf (p.1)
+eval_002,What are the maximum daily meal per diem allowances for domestic and international travel?,The maximum daily per diem is $75 for domestic meals and $120 for international meals.,"The maximum daily meal per diem allowances are:
+
+* **Domestic travel:** $75 per day [Source 1, Source 3]
+* **International travel:** $120 per day [Source 1, Source 3]",1.0,0.840796863887161,0.8055555555287036,1.0,5,McLaren_Employee_Travel_Expense_Policy_2026.docx (p.1); McLaren_Employee_Travel_Expense_Policy_2026.docx (p.1); McLaren_Employee_Travel_Expense_Policy_2026.docx (p.1); McLaren_Employee_Travel_Expense_Policy_2026.docx (p.1); McLaren_Employee_Travel_Expense_Policy_2026.docx (p.1)
+eval_003,What approvals and tickets are required before a production deployment?,All production deployments require a formal Change Request (CR) ticket in ServiceNow and review and approval by the Change Control Board (CCB).,"Based on the provided documents, the following tickets and approvals are required for a production deployment:
+
+**Required Tickets:**
+* A formal Change Request (CR) ticket in ServiceNow is required for all production deployments [Source 1].
+
+**Required Approvals & Sign-offs:**
+* **Change Control Board (CCB) Approval:** Obtained by submitting the ServiceNow ticket with required artifacts [Source 1].
+* **UAT Sign-off:** Formal approval from the Client Sponsor or Product Owner [Source 1, Source 3].
+* **QA Sign-off:** Test Summary Report indicating zero open S1 (Blocker) or S2 (Critical) defects [Source 1].
+* **Release Manager Approval:** Required for deployment [Source 2], and the pre-deployment security checklist must be validated by the Release Manager and InfoSec [Source 4].
+* **InfoSec Sign-off / Validation:** Required as part of the pre-deployment security checklist [Source 4]. 
+* **CISO Sign-off:** Required for major version releases following a formal penetration test [Source 4].
+
+**Required Artifacts Attached to the Ticket:**
+* Deployment Runbook [Source 1, Source 2]
+* Rollback Plan [Source 1]
+* Release Notes [Source 2]",0.9090909090909091,0.9131624624158909,0.9999999999,1.0,5,SYN_010_Deployment_Release_Management.pdf (p.4); SYN_006_Project_Delivery_SOP.docx (p.1); SYN_006_Project_Delivery_SOP.docx (p.1); SYN_014_Cybersecurity_Policy_Secure_Dev.pdf (p.8); SYN_010_Deployment_Release_Management.pdf (p.2)
+AVERAGE_MEAN,AGGREGATE SUMMARY ACROSS SAMPLES,,,0.9697,0.8496,0.8796,1.0,,

@@ -1,0 +1,308 @@
+{
+  "timestamp": "20261007_122424",
+  "total_samples": 6,
+  "samples_with_reference": 5,
+  "samples_without_reference": 1,
+  "metrics_evaluated": [
+    "faithfulness",
+    "context_precision",
+    "context_recall"
+  ],
+  "mean_scores": {
+    "faithfulness": 1.0,
+    "context_precision": 0.8944,
+    "context_recall": 1.0
+  },
+  "sample_results": [
+    {
+      "id": "eval_001",
+      "question": "What is the annual planned leave allotment for employees at McLaren?",
+      "reference": "Employees are allotted 20 days of planned leave per calendar year, which accrues monthly at 1.66 days per month.",
+      "response": "The annual planned leave allotment for employees is 20 days per calendar year, which is accrued monthly at a rate of 1.66 days per month [Source 1, Source 3].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 3,
+          "page_number": 3,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 3,
+          "page_number": 3,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 1,
+          "page_number": 1,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": NaN,
+      "context_precision": 0.8333333332916666,
+      "context_recall": 1.0
+    },
+    {
+      "id": "eval_002",
+      "question": "What are the maximum daily meal per diem allowances for domestic and international travel?",
+      "reference": "The maximum daily per diem is $75 for domestic meals and $120 for international meals.",
+      "response": "The maximum daily meal per diem allowances are:\n\n* **Domestic travel:** $75 per day [Source 1, Source 3]\n* **International travel:** $120 per day [Source 1, Source 3]",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 2,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 3,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 4,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 5,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": NaN,
+      "context_precision": 0.8055555555287036,
+      "context_recall": 1.0
+    },
+    {
+      "id": "eval_003",
+      "question": "What approvals and tickets are required before a production deployment?",
+      "reference": "All production deployments require a formal Change Request (CR) ticket in ServiceNow and review and approval by the Change Control Board (CCB).",
+      "response": "Based on the provided documents, the following tickets, artifacts, and approvals are required before a production deployment:\n\n* **Tickets:** A formal Change Request (CR) ticket in ServiceNow is required for all production deployments [Source 1].\n* **Required Artifacts & Approvals for the Change Control Board (CCB):**\n  * **UAT Sign-off:** Formal approval from the Client Sponsor or Product Owner [Source 1].\n  * **QA Sign-off:** A Test Summary Report showing zero open S1 (Blocker) or S2 (Critical) defects [Source 1].\n  * **Deployment Runbook:** A step-by-step technical guide for executing the release [Source 1].\n  * **Rollback Plan:** A verified method for reverting the system if the deployment fails [Source 1].\n* **Pre-Deployment Security Checklist Validations:** \n  * Validated by the **Release Manager** and **InfoSec** [Source 4].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_010_Deployment_Release_Management.pdf",
+          "page": 4,
+          "page_number": 4,
+          "title": "Synthetic Deployment and Release Management SOP"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_006_Project_Delivery_SOP.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Syn 006 Project Delivery Sop"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_006_Project_Delivery_SOP.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Syn 006 Project Delivery Sop"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_014_Cybersecurity_Policy_Secure_Dev.pdf",
+          "page": 8,
+          "page_number": 8,
+          "title": "Synthetic Cybersecurity Policy & Secure Development Checklist"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_010_Deployment_Release_Management.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Deployment and Release Management SOP"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": NaN,
+      "context_precision": 0.9999999999,
+      "context_recall": 1.0
+    },
+    {
+      "id": "eval_004",
+      "question": "What is the company policy regarding alcohol reimbursement during business travel?",
+      "reference": "Alcohol expenses are non-reimbursable except during authorized client dinners with a maximum cap of $40 per person. Employee-only meals must not include expensed alcohol.",
+      "response": "According to the company policy, alcohol expenses are generally non-reimbursable, with the exception of authorized client dinners which have a maximum cap of $40 per person [Source 1, Source 3]. Employee-only meals must not include expensed alcohol [Source 1].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 2,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 3,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 4,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 5,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": NaN,
+      "context_precision": 0.8333333332916666,
+      "context_recall": 1.0
+    },
+    {
+      "id": "eval_005",
+      "question": "How much advance notice is required when submitting a planned leave request?",
+      "reference": "Planned leave requests must be submitted via the HR Portal at least 14 days in advance and require direct manager approval.",
+      "response": "When submitting a planned leave request, you must submit it via the HR Portal at least 14 days in advance [Source 1].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 5,
+          "page_number": 5,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 3,
+          "page_number": 3,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 5,
+          "page_number": 5,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 6,
+          "page_number": 6,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": NaN,
+      "context_precision": 0.99999999995,
+      "context_recall": 1.0
+    },
+    {
+      "id": "eval_006",
+      "question": "What core development guidelines apply to AI and RAG development?",
+      "reference": null,
+      "response": "Based on the provided documents, the core development guidelines and processes for AI and RAG (Retrieval-Augmented Generation) include:\n\n* **AI Application Lifecycle:** A 5-stage iterative process consisting of Discovery & Feasibility, Data Engineering & Ingestion, and Prompt Engineering & Retrieval Tuning [Source 1]. \n* **Data Protection & Constraints:** Tier 4 (Sensitive Personal Data) must never be ingested into vector databases, as vector embeddings of PII can be reverse-engineered [Source 2].\n* **Access Control & Parity (RBAC):** The RAG retrieval engine and vector search must mirror the access permissions of source systems by incorporating the user's Entra ID/Okta group claims into metadata filters to ensure employees do not retrieve unauthorized documents [Source 2, Source 4].\n* **Prompt-Injection Protection:** Untrusted user input must be wrapped in XML tags (e.g., `<query>{{user_input}}</query>`), and lightweight classifiers (such as Llama-Guard) must be used as input guardrails to screen for malicious intent [Source 4].\n* **Evaluation Framework:** RAG applications must be evaluated offline using a Golden Dataset (a curated list of 50–100 questions and expected answers) to measure metrics like Context Precision [Source 4].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_016_AI_RAG_Development_Guide.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic AI and RAG Application Development Guide"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_015_Data_Protection_Privacy.pdf",
+          "page": 5,
+          "page_number": 5,
+          "title": "Synthetic Data Protection and Privacy Guidelines"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_016_AI_RAG_Development_Guide.pdf",
+          "page": 1,
+          "page_number": 1,
+          "title": "Synthetic AI and RAG Application Development Guide"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_016_AI_RAG_Development_Guide.pdf",
+          "page": 8,
+          "page_number": 8,
+          "title": "Synthetic AI and RAG Application Development Guide"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_018_Training_Course_Catalogue.xlsx",
+          "page": null,
+          "page_number": null,
+          "title": "Syn 018 Training Course Catalogue"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": NaN,
+      "context_precision": null,
+      "context_recall": null
+    }
+  ],
+  "report_json_path": null,
+  "report_csv_path": null
+}

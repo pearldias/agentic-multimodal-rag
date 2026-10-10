@@ -1,0 +1,166 @@
+{
+  "timestamp": "20261007_122914",
+  "total_samples": 3,
+  "samples_with_reference": 3,
+  "samples_without_reference": 0,
+  "metrics_evaluated": [
+    "faithfulness",
+    "answer_relevancy",
+    "context_precision",
+    "context_recall"
+  ],
+  "mean_scores": {
+    "faithfulness": 0.9697,
+    "answer_relevancy": 0.8496,
+    "context_precision": 0.8796,
+    "context_recall": 1.0
+  },
+  "sample_results": [
+    {
+      "id": "eval_001",
+      "question": "What is the annual planned leave allotment for employees at McLaren?",
+      "reference": "Employees are allotted 20 days of planned leave per calendar year, which accrues monthly at 1.66 days per month.",
+      "response": "The annual planned leave allotment for employees is 20 days per calendar year, which is accrued monthly at a rate of 1.66 days per month [Source 1, Source 3].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 3,
+          "page_number": 3,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 3,
+          "page_number": 3,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 1,
+          "page_number": 1,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7946985314317583,
+      "context_precision": 0.8333333332916666,
+      "context_recall": 1.0
+    },
+    {
+      "id": "eval_002",
+      "question": "What are the maximum daily meal per diem allowances for domestic and international travel?",
+      "reference": "The maximum daily per diem is $75 for domestic meals and $120 for international meals.",
+      "response": "The maximum daily meal per diem allowances are:\n\n* **Domestic travel:** $75 per day [Source 1, Source 3]\n* **International travel:** $120 per day [Source 1, Source 3]",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 2,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 3,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 4,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 5,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.840796863887161,
+      "context_precision": 0.8055555555287036,
+      "context_recall": 1.0
+    },
+    {
+      "id": "eval_003",
+      "question": "What approvals and tickets are required before a production deployment?",
+      "reference": "All production deployments require a formal Change Request (CR) ticket in ServiceNow and review and approval by the Change Control Board (CCB).",
+      "response": "Based on the provided documents, the following tickets and approvals are required for a production deployment:\n\n**Required Tickets:**\n* A formal Change Request (CR) ticket in ServiceNow is required for all production deployments [Source 1].\n\n**Required Approvals & Sign-offs:**\n* **Change Control Board (CCB) Approval:** Obtained by submitting the ServiceNow ticket with required artifacts [Source 1].\n* **UAT Sign-off:** Formal approval from the Client Sponsor or Product Owner [Source 1, Source 3].\n* **QA Sign-off:** Test Summary Report indicating zero open S1 (Blocker) or S2 (Critical) defects [Source 1].\n* **Release Manager Approval:** Required for deployment [Source 2], and the pre-deployment security checklist must be validated by the Release Manager and InfoSec [Source 4].\n* **InfoSec Sign-off / Validation:** Required as part of the pre-deployment security checklist [Source 4]. \n* **CISO Sign-off:** Required for major version releases following a formal penetration test [Source 4].\n\n**Required Artifacts Attached to the Ticket:**\n* Deployment Runbook [Source 1, Source 2]\n* Rollback Plan [Source 1]\n* Release Notes [Source 2]",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_010_Deployment_Release_Management.pdf",
+          "page": 4,
+          "page_number": 4,
+          "title": "Synthetic Deployment and Release Management SOP"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_006_Project_Delivery_SOP.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Syn 006 Project Delivery Sop"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_006_Project_Delivery_SOP.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Syn 006 Project Delivery Sop"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_014_Cybersecurity_Policy_Secure_Dev.pdf",
+          "page": 8,
+          "page_number": 8,
+          "title": "Synthetic Cybersecurity Policy & Secure Development Checklist"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_010_Deployment_Release_Management.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Deployment and Release Management SOP"
+        }
+      ],
+      "faithfulness": 0.9090909090909091,
+      "answer_relevancy": 0.9131624624158909,
+      "context_precision": 0.9999999999,
+      "context_recall": 1.0
+    }
+  ],
+  "report_json_path": null,
+  "report_csv_path": null
+}

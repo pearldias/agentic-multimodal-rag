@@ -1,0 +1,269 @@
+{
+  "timestamp": "20261009_115403",
+  "total_samples": 5,
+  "samples_with_reference": 5,
+  "samples_without_reference": 0,
+  "metrics_evaluated": [
+    "faithfulness",
+    "answer_relevancy",
+    "context_precision",
+    "multihop_context_precision",
+    "context_recall"
+  ],
+  "mean_scores": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.857,
+    "context_precision": 0.5,
+    "multihop_context_precision": 1.0,
+    "context_recall": 1.0
+  },
+  "sample_results": [
+    {
+      "id": "q1",
+      "question": "According to the Cybersecurity Policy, what are the exact vulnerability remediation SLAs for Critical and High severity vulnerabilities discovered during dependency scanning?",
+      "reference": "Critical vulnerabilities must be remediated within 24 hours, and High vulnerabilities must be remediated within 7 days.",
+      "response": "According to the Cybersecurity Policy, the exact vulnerability remediation SLAs are:\n\n* **Critical:** 24 hours [Source 1]\n* **High:** 7 days [Source 1]",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_014_Cybersecurity_Policy_Secure_Dev.pdf",
+          "page": 5,
+          "page_number": 5,
+          "title": "Synthetic Cybersecurity Policy & Secure Development Checklist"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_008_Software_Development_Standards.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Syn 008 Software Development Standards"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_005_IT_Support_Access_Guide.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic IT Support and Access Guide"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_010_Deployment_Release_Management.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Deployment and Release Management SOP"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_010_Deployment_Release_Management.pdf",
+          "page": 6,
+          "page_number": 6,
+          "title": "Synthetic Deployment and Release Management SOP"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8554195184838869,
+      "context_precision": 0.9999999999,
+      "multihop_context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    {
+      "id": "q2",
+      "question": "Under the 2026 Employee Travel & Expense Policy, what is the financial penalty if an employee cancels a non-refundable ticket without a valid business or medical reason?",
+      "reference": "Cancelling a non-refundable ticket without a valid business or medical reason will result in a 50% deduction of the ticket cost from the employee's next expense reimbursement.",
+      "response": "Under the 2026 Employee Travel & Expense Policy, canceling a non-refundable ticket without a valid business or medical reason will result in a 50% deduction of the ticket cost from the employee's next expense reimbursement [Source 1].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 2,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 3,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 5,
+          "filename": "McLaren_Employee_Travel_Expense_Policy_2026.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Employee Travel Expense Policy 2026"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8982376180468729,
+      "context_precision": 0.9999999999,
+      "multihop_context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    {
+      "id": "q3",
+      "question": "In the Project and POC Catalogue, what is the team size, duration, and Reusability Level for the \"Smart Invoice Extractor\" project (PRJ-005), and what is the Component ID of its related reusable asset?",
+      "reference": "The \"Smart Invoice Extractor\" (PRJ-005) has a team size of 6, a duration of 4 Months, and a \"High\" Reusability Level. Its related reusable component is COMP-004 (\"Invoice OCR Extractor\").",
+      "response": "For the \"Smart Invoice Extractor\" project (PRJ-005):\n* **Team Size:** 6 [Source 1]\n* **Duration:** 4 Months [Source 1]\n* **Reusability Level:** High [Source 1]\n* **Component ID of its related reusable asset:** COMP-004 [Source 2]",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_019_Project_POC_Catalogue.xlsx",
+          "page": null,
+          "page_number": null,
+          "title": "Syn 019 Project Poc Catalogue"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_019_Project_POC_Catalogue.xlsx",
+          "page": null,
+          "page_number": null,
+          "title": "Syn 019 Project Poc Catalogue"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_020_Tech_Service_Mapping.xlsx",
+          "page": null,
+          "page_number": null,
+          "title": "Syn 020 Tech Service Mapping"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_019_Project_POC_Catalogue.xlsx",
+          "page": null,
+          "page_number": null,
+          "title": "Syn 019 Project Poc Catalogue"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_019_Project_POC_Catalogue.xlsx",
+          "page": null,
+          "page_number": null,
+          "title": "Syn 019 Project Poc Catalogue"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8481675841380738,
+      "context_precision": 0.0,
+      "multihop_context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    {
+      "id": "q4",
+      "question": "Riya Menon needs to submit a planned leave request to take a vacation beginning on June 30, 2027. What major project milestone for her initiative lands on that exact date, and how many days in advance must she submit her leave request to comply with HR policy?",
+      "reference": "The major project milestone scheduled for June 30, 2027, is the \"Solar Installation\". According to the Leave Policy, she must submit her planned leave request via the HR Portal at least 14 days in advance.",
+      "response": "The major project milestone for Riya Menon's initiative (the McLaren GreenPulse Initiative) that lands on June 30, 2027, is the **Solar Installation** [Source 1]. \n\nTo comply with HR policy, she must submit her planned leave request via the HR Portal at least **14 days in advance** [Source 2].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "McLaren_GreenPulse_Initiative_Brief.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Mclaren Greenpulse Initiative Brief"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 3,
+          "page_number": 3,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 4,
+          "page_number": 4,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 2,
+          "page_number": 2,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8752239214961492,
+      "context_precision": 0.0,
+      "multihop_context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    {
+      "id": "q5",
+      "question": "Context (Previous Q/A): Q: What are McLaren's global core working hours? A: The core working hours are 10:00 AM to 2:00 PM EST. Follow-Up Question: If an employee's early departure causes them to miss any part of this time window, what specific action must they take?",
+      "reference": "They must inform their manager and log a half-day (0.5 days) of Planned Leave in the HR Portal to account for the absence.",
+      "response": "If an early departure causes an employee to miss any part of the core working hours, the employee is required to log a half-day (0.5 days) of Planned Leave in the HR Portal to account for the absence [Source 1].",
+      "retrieved_contexts_count": 5,
+      "sources": [
+        {
+          "source_id": 1,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 4,
+          "page_number": 4,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        },
+        {
+          "source_id": 2,
+          "filename": "SYN_002_Employee_Handbook.pdf",
+          "page": 3,
+          "page_number": 3,
+          "title": "Synthetic Employee Handbook"
+        },
+        {
+          "source_id": 3,
+          "filename": "SYN_004_Employee_Onboarding_Guide.docx",
+          "page": 1,
+          "page_number": 1,
+          "title": "Syn 004 Employee Onboarding Guide"
+        },
+        {
+          "source_id": 4,
+          "filename": "SYN_002_Employee_Handbook.pdf",
+          "page": 5,
+          "page_number": 5,
+          "title": "Synthetic Employee Handbook"
+        },
+        {
+          "source_id": 5,
+          "filename": "SYN_003_Leave_WFH_Policy.pdf",
+          "page": 3,
+          "page_number": 3,
+          "title": "Synthetic Leave, Attendance and Work-from-Home Policy"
+        }
+      ],
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.807774138203087,
+      "context_precision": NaN,
+      "multihop_context_precision": NaN,
+      "context_recall": 1.0
+    }
+  ],
+  "report_json_path": null,
+  "report_csv_path": null
+}

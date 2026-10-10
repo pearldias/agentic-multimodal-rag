@@ -6,7 +6,7 @@ Isolated experiment comparing:
 - XLSX: XlsxParser vs UnstructuredExcelLoader
 - TXT: TxtParser vs TextLoader
 
-Covers 10 criteria:
+Criteria:
 1. Parsing time
 2. Number of documents/elements returned
 3. Extracted text quality
